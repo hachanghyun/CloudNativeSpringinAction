@@ -86,6 +86,6 @@
     도커서버에는 도커데몬이 포함되어있는데 도커데몬은 백그라운드에서 실행하면서 이미지 컨테이너 볼륨 네트워크 같은 도커 객체를 만들고 관리
     도커데몬은 API를 제공하는데 이 API를 통해 컨테이너를 실행하거나 볼륨을 생성하는 것과 같은 명령을 도커에 전달할 수 있다.
     이 API를 사용해 데몬과 상호작용하는 것이 도커 클라이언트이다.
-    ![img](https://github.com/user-attachments/assets/29213102-2b3a-4317-bde6-b782595cfdac)
+![img](https://github.com/user-attachments/assets/29213102-2b3a-4317-bde6-b782595cfdac)
 
 
