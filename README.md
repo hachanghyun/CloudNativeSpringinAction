@@ -1,4 +1,6 @@
-# cloudNativeSpringinAction
+# CloudNativeSpringinAction
+## 클라우드 네이티브란?
+    클라우드 컴퓨팅 환경에서 현대적 애플리케이션을 구축, 배포 및 관리할 때의 소프트웨어 접근 방식
 
 ## 클라우드 네이티브를 사용하는 이유
 ### 1. 속도
