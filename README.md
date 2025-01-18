@@ -172,4 +172,4 @@
 ### 3.2.2 요청당 스레드 모델 이해
 ![IMG_6131](https://github.com/user-attachments/assets/79383341-e176-4dc0-8149-0aafa20dccf1)
 
-
+ 
