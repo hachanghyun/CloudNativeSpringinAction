@@ -185,11 +185,11 @@
     import javax.validation.constraints.Pattern;
     import javax.validation.constraints.Positive;
     
-    public record Book (
+    public record Book ( //도메인 모델은 불가변 객체인 레코드로 구현
     
         @NotBlank(message = "The book ISBN must be defined.")
         @Pattern(regexp = "^([0-9]{10}|[0-9]{13})$", message = "The ISBN format must be valid.")
-        String isbn,
+        String isbn, // 고유하게 식별
     
         @NotBlank(message = "The book title must be defined.")
         String title,
@@ -202,3 +202,53 @@
         Double price
         
     ){}
+
+### 애플리케이션의 사용 사례 구현
+    package com.polarbookshop.catalogservice.domain;
+
+    import org.springframework.stereotype.Service;
+    
+    @Service //스프링이 관리하는 서비스, 스테레오타입 애너테이션
+    public class BookService {
+    
+        private final BookRepository bookRepository;
+    
+        public BookService(BookRepository bookRepository) {
+            this.bookRepository = bookRepository; //BookRepository를 생성자 오토와이어링을 통해 제공
+        }
+    
+        public Iterable<Book> viewBookList() {
+            return bookRepository.findAll();
+        }
+    
+        public Book viewBookDetails(String isbn) {
+            return bookRepository.findByIsbn(isbn) //존재하지 않는 책을 보려고 할때, 그에 해당하는 예외발생
+                    .orElseThrow(() -> new BookNotFoundException(isbn));
+        }
+    
+        public Book addBookToCatalog(Book book) {
+            if (bookRepository.existsByIsbn(book.isbn())) { //동일한 책을 여러번 추가할려고 시도하면 그에 해당하는 예외 발생
+                throw new BookAlreadyExistsException(book.isbn());
+            }
+            return bookRepository.save(book);
+        }
+    
+        public void removeBookFromCatalog(String isbn) {
+            bookRepository.deleteByIsbn(isbn);
+        }
+    
+        public Book editBookDetails(String isbn, Book book) {
+    		return bookRepository.findByIsbn(isbn)
+    				.map(existingBook -> {
+    					var bookToUpdate = new Book( //책을 수정할 때 개체 식별자인 ISBN 코드를 제외한 모든 필드 수정 가능
+    							existingBook.isbn(),
+    							book.title(),
+    							book.author(),
+    							book.price());
+    					return bookRepository.save(bookToUpdate);
+    				})
+    				.orElseGet(() -> addBookToCatalog(book)); //카탈로그에 존재하지 않는 책을 수정하려고 하면 새로운책 만듬.
+        }
+    
+    }
+
