@@ -101,5 +101,13 @@
 ![kubernetes-model-architecture](https://github.com/user-attachments/assets/8160bd1c-debd-4a15-83b9-b9473f96b423)
 
 ### 2.4.2 쿠버네티스에서 스프링 애플리케이션 실행 
+    minikube image load catalog-service:0.0.1-SNAPSHOT
+    수동작업을 통해 로컬 클러스터로 스프링부트 이미지 가져오기
 
+    kubectl create deployment catalog-service --image=catalog-service:0.0.1-SNAPSHOT
+    쿠버네티스 deplyment 리소스 생성
+    배포이름 설정
+    실행할 이미지의 이름과 버전
+
+    
 
