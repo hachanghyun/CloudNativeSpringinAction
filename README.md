@@ -252,3 +252,84 @@
     
     }
 
+### 데이터 액세스를 위해 리포지터리 추상화
+    package com.polarbookshop.catalogservice.domain;
+
+    import java.util.Optional;
+    
+    public interface BookRepository {
+    	Iterable<Book> findAll();
+    	Optional<Book> findByIsbn(String isbn);
+    	boolean existsByIsbn(String isbn);
+    	Book save(Book book);
+    	void deleteByIsbn(String isbn);
+    }
+
+    package com.polarbookshop.catalogservice.persistence;
+
+    import java.util.Map;
+    import java.util.Optional;
+    import java.util.concurrent.ConcurrentHashMap;
+    
+    import com.polarbookshop.catalogservice.domain.Book;
+    import com.polarbookshop.catalogservice.domain.BookRepository;
+    
+    import org.springframework.stereotype.Repository;
+    
+    @Repository
+    public class InMemoryBookRepository implements BookRepository {
+    
+    	private static final Map<String, Book> books = new ConcurrentHashMap<>();
+    
+    	@Override
+    	public Iterable<Book> findAll() {
+    		return books.values();
+    	}
+    
+    	@Override
+    	public Optional<Book> findByIsbn(String isbn) {
+    		return existsByIsbn(isbn) ? Optional.of(books.get(isbn)) : Optional.empty();
+    	}
+    
+    	@Override
+    	public boolean existsByIsbn(String isbn) {
+    		return books.get(isbn) != null;
+    	}
+    
+    	@Override
+    	public Book save(Book book) {
+    		books.put(book.isbn(), book);
+    		return book;
+    	}
+    
+    	@Override
+    	public void deleteByIsbn(String isbn) {
+    		books.remove(isbn);
+    	}
+    }
+
+### 도메인 오류를 알리기 위한 예외의 사용
+    package com.polarbookshop.catalogservice.domain;
+
+    public class BookAlreadyExistsException extends RuntimeException {
+    
+        public BookAlreadyExistsException(String isbn) {
+            super("A book with ISBN " + isbn + " already exists.");
+        }
+    
+    }
+
+    package com.polarbookshop.catalogservice.domain;
+
+    public class BookNotFoundException extends RuntimeException {
+    
+        public BookNotFoundException(String isbn) {
+            super("The book with ISBN " + isbn + " was not found.");
+        }
+    
+    }
+
+
+    
+
+    
