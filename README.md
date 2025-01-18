@@ -86,8 +86,8 @@
     도커서버에는 도커데몬이 포함되어있는데 도커데몬은 백그라운드에서 실행하면서 이미지 컨테이너 볼륨 네트워크 같은 도커 객체를 만들고 관리
     도커데몬은 API를 제공하는데 이 API를 통해 컨테이너를 실행하거나 볼륨을 생성하는 것과 같은 명령을 도커에 전달할 수 있다.
     이 API를 사용해 데몬과 상호작용하는 것이 도커 클라이언트이다.
-![img](https://github.com/user-attachments/assets/29213102-2b3a-4317-bde6-b782595cfdac)
     컨테이너 포트포워딩이나 포트매핑이라는 프로세스를 통해 외부 세계에 자신의 서비스를 특정 포트로 노출할 수 있다.
+![img](https://github.com/user-attachments/assets/29213102-2b3a-4317-bde6-b782595cfdac)
 
 ### 2.3.2 컨테이너를 통한 스프링 애플리케이션의 실행
     docker run --rm --name catalog-service -p 8080:8080 catalog-service:0.0.1-SNAPSHOT
