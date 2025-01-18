@@ -109,5 +109,11 @@
     배포이름 설정
     실행할 이미지의 이름과 버전
 
-    
+    kubectl expose deployment catalog-service --name=catalog-service --port=8080
+    쿠버네티스의 기본 설정으로는 파드로 실행중인 애플리케이션 액세스 X
+    쿠버네티스 리소르를 노출
+    노출할 리소스 유형
+    노출할 배포의 이름
+    서비스이름
+    서비스를 노출할 포트 번호 
 
