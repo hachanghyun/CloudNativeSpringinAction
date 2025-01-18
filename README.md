@@ -125,7 +125,8 @@
     localhost:8000 으로 해당 서비스 조회
 
 ## 2.5 폴라 북솝: 클라우드 네이티브 애플리케이션
-![3RBp2waEgSk61H6i](https://github.com/user-attachments/assets/e7ffe7fe-a139-4f29-993d-80703cf834ae)
+![IMG_6135](https://github.com/user-attachments/assets/d95f305e-61ba-4cbb-a157-d2b8d945032e)
+
 
 ### 2.5.2 프로젝트에서 사용되는 패턴과 기술
 #### 1 웹과 상호작용
