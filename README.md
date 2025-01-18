@@ -97,5 +97,9 @@
     8080포트를 통해 컨테이너 외부로 서비스를 노출한다.
     실행할 이미지의 이름과 버전
 
+## 2.4 쿠버네티스로 컨테이너 관리
+![kubernetes-model-architecture](https://github.com/user-attachments/assets/8160bd1c-debd-4a15-83b9-b9473f96b423)
+
+### 2.4.2. 
 
 
