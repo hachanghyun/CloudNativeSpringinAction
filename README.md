@@ -172,4 +172,10 @@
 ### 3.2.2 요청당 스레드 모델 이해
 ![IMG_6131](https://github.com/user-attachments/assets/79383341-e176-4dc0-8149-0aafa20dccf1)
 
- 
+### 3.2.3 내장 톰캣 설정
+    server.tomcat.connection-timeout: 클라이언트에서 TCP 연결을 수락하고 실제로 HTTP 요청을 받기까지 톰캣이 최대한 기다리는 시간 정의, 서비스 거부공격을 방지하는데 도움, 기본 20s, 2s가 적당
+    server.tomcat.keep-alive-timeout: 새로운 HTTP 요청을 기다리는 동안 연결을 유지하는 시간 설정 
+    server.tomcat.thread.max: 최대 요청 처리 스레드 수  설정
+    server.tomcat.threads.min-spare: 풀에 항상 유지해야 하는 최소의 스레드 수 설정
+
+
