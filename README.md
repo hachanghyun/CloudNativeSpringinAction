@@ -588,7 +588,7 @@
 
  	$ ./gradlew test --tests BookValidationTests
 
-### 3.4.2 @SpringBootTEst를 통한 통합 테스트
+### 3.4.2 @SpringBootTest를 통한 통합 테스트
 
 #### 스프링 리액티브 웹을 위한 테스트 의존성 추가
 	dependencies {
@@ -709,6 +709,45 @@
 	}
 
 
+## 3.5 배포 파이프라인: 빌드 및 테스트
+### 3.5.2 깃허브 액션을 이용한 커밋 단계 구현
+	name: Commit Stage //워크플로의 이름
+	on: push //새 코드를 저장소로 푸시하면 워크플로를 시작한다.
+	
+	jobs:
+	  build: //작업의 고유 식별자
+	    name: Build and Test //작업의 인간 친화적 명칭
+	    runs-on: ubuntu-22.04 //작업이 실행될 머신의 유형
+	    permissions: //작업에 부여된 권한
+	      contents: read //현재 git 저장소를 체크아웃할수 있는 권한
+	      security-events: write //깃허브에 보안 이벤트를 제출할 수 있는 권한
+	    steps:
+	      - name: Checkout source code
+	        uses: actions/checkout@v4 //현재 깃저장소를 체크아웃한다.
+	      - name: Set up JDK
+	        uses: actions/setup-java@v4 //자바 런타임을 설치하고 설정한다.
+	        with: //사용할 버전,배포,캐시 유형을 정의한다.
+	          distribution: temurin
+	          java-version: 17
+	          cache: gradle
+	      - name: Build, unit tests and integration tests
+	        run: |
+	          chmod +x gradlew
+	          ./gradlew build
+	      - name: Code vulnerability scanning
+	        uses: anchore/scan-action@v3 //그라이프를 사용해 취약성을 스캔한다.
+	        id: scan //현재 단계의 식별자를 할당하고 이후의 단계에서 참고할 수 있다.
+	        with:
+	          path: "${{ github.workspace }}" //체크아웃 저장소 path
+	          fail-build: false //보안 취약성 발견 시 빌드 실패 여부
+	          severity-cutoff: high //오류로 간주할 최소 수준의 보안 유형
+	      - name: Upload vulnerability report //스캔이 완료된 이후에 리포트를 생성할지 여부
+	        uses: github/codeql-action/upload-sarif@v3
+	        if: success() || failure()
+	        with:
+	          sarif_file: ${{ steps.scan.outputs.sarif }}
+
+	
 
  
 
