@@ -390,5 +390,96 @@
     
     }
 
+    HTTPie로 실행
+    http POST : 9001/books author="Ha Chang Hyun" \
+        title="Northern Lights" isbn="1234567891" price=9.90 # 책성성 요청
+
+    http :9001/books/1234567891 #책 조회 요청
 
     
+### 3.3.3 데이터 유효성 검사 및 오류 처리
+    dependencies {
+    ...
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+    }
+
+    import javax.validation.constraints.NotBlank;
+    import javax.validation.constraints.NotNull;
+    import javax.validation.constraints.Pattern;
+    import javax.validation.constraints.Positive;
+    
+    public record Book ( //도메인 모델은 불가변 객체인 레코드로 구현
+    
+        @NotBlank(message = "The book ISBN must be defined.")
+        @Pattern(regexp = "^([0-9]{10}|[0-9]{13})$", message = "The ISBN format must be valid.") //이 필드는 주어진 정규 표헌식의 값과 일치하는 형식을 가져야 한다(표준ISBN 형식)
+        String isbn, // 고유하게 식별
+    
+        @NotBlank(message = "The book title must be defined.") //이 필드는 널 값ㅇ ㅣ되어서는 안되고 화이트스페이스가 아닌 문자를 최소 하나 이상 있어야 한다.
+        String title,
+    
+        @NotBlank(message = "The book author must be defined.")
+        String author,
+    
+        @NotNull(message = "The book price must be defined.")
+        @Positive(message = "The book price must be greater than zero.") //이 필드는 널 값이 되어서는 안되고 0보다 큰 값을 가져야 한다.
+        Double price
+        
+    ){}
+
+        @PostMapping
+        @ResponseStatus(HttpStatus.CREATED) 
+        public Book post(@Valid @RequestBody Book book) { //@Valid 애너테이션 추가
+            return bookService.addBookToCatalog(book);
+        }
+    
+        @PutMapping("{isbn}") 
+        public Book put(@PathVariable String isbn, @Valid @RequestBody Book book) { //@Valid 애너테이션 추가
+            return bookService.editBookDetails(isbn, book);
+        }
+
+#### 예외를 어떻게 처리할지 정의하는 어드바이스 클래스
+    package com.polarbookshop.catalogservice.web;
+
+    import java.util.HashMap;
+    import java.util.Map;
+    
+    import com.polarbookshop.catalogservice.domain.BookAlreadyExistsException;
+    import com.polarbookshop.catalogservice.domain.BookNotFoundException;
+    
+    import org.springframework.http.HttpStatus;
+    import org.springframework.validation.FieldError;
+    import org.springframework.web.bind.MethodArgumentNotValidException;
+    import org.springframework.web.bind.annotation.ExceptionHandler;
+    import org.springframework.web.bind.annotation.ResponseStatus;
+    import org.springframework.web.bind.annotation.RestControllerAdvice;
+    
+    @RestControllerAdvice //클래스가 중앙식 예외 핸들러임을 표시
+    public class BookControllerAdvice {
+    
+        @ExceptionHandler(BookNotFoundException.class) //이 핸들러가 실행되어야 할 대상인 예외 정의
+        @ResponseStatus(HttpStatus.NOT_FOUND)
+        String bookNotFoundHandler(BookNotFoundException ex) {
+            return ex.getMessage(); //HTTP 응답 본문에 포함할 메시지
+        }
+    
+        @ExceptionHandler(BookAlreadyExistsException.class)
+        @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY) //예외를 발생할떄 GHTTP 응답에 포함할 상태코드 정의
+        String bookAlreadyExistsHandler(BookAlreadyExistsException ex) {
+            return ex.getMessage();
+        }
+    
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        @ResponseStatus(HttpStatus.BAD_REQUEST)
+        public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) { //책 데이터 유효성 검증이 실패한 경우 발생하는 예외 처리
+            var errors = new HashMap<String, String>();
+            ex.getBindingResult().getAllErrors().forEach(error -> {
+                String fieldName = ((FieldError) error).getField();
+                String errorMessage = error.getDefaultMessage();
+    			errors.put(fieldName, errorMessage); //빈 메시지 대신 의미 있는 오류 메시지를 위해 유효하지 않은 필드 확인
+            });
+            return errors;
+        }
+    
+    }
+
+     
